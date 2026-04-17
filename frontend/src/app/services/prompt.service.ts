@@ -40,18 +40,18 @@ export class PromptService {
     if (tag) {
       params = params.set('tag', tag);
     }
-    return this.http.get<Prompt[]>(`${this.baseUrl}/prompts/`, { params });
+    return this.http.get<Prompt[]>(`${this.baseUrl}/prompts/`, { params, withCredentials: true });
   }
 
   getPrompt(id: number): Observable<PromptDetail> {
-    return this.http.get<PromptDetail>(`${this.baseUrl}/prompts/${id}/`);
+    return this.http.get<PromptDetail>(`${this.baseUrl}/prompts/${id}/`, { withCredentials: true });
   }
 
   createPrompt(data: CreatePromptPayload): Observable<Prompt> {
-    return this.http.post<Prompt>(`${this.baseUrl}/prompts/`, data);
+    return this.http.post<Prompt>(`${this.baseUrl}/prompts/`, data, { withCredentials: true });
   }
 
   getTags(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/tags/`);
+    return this.http.get<string[]>(`${this.baseUrl}/tags/`, { withCredentials: true });
   }
 }

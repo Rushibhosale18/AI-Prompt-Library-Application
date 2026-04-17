@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/login/`, credentials).pipe(
+    return this.http.post(`${this.baseUrl}/auth/login/`, credentials, { withCredentials: true }).pipe(
       tap((res: any) => {
         this.authState$.next({ authenticated: true, username: res.user });
       })
@@ -32,7 +32,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/logout/`, {}).pipe(
+    return this.http.post(`${this.baseUrl}/auth/logout/`, {}, { withCredentials: true }).pipe(
       tap(() => {
         this.authState$.next({ authenticated: false, username: null });
       })
@@ -40,7 +40,7 @@ export class AuthService {
   }
 
   checkSession(): void {
-    this.http.get(`${this.baseUrl}/auth/check/`).subscribe({
+    this.http.get(`${this.baseUrl}/auth/check/`, { withCredentials: true }).subscribe({
       next: (res: any) => {
         this.authState$.next({ authenticated: true, username: res.user });
       },
