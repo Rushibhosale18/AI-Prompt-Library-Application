@@ -122,9 +122,16 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://ai-prompt-library-application-seven.vercel.app',
     'http://localhost:4200',
     'http://localhost:80',
     'http://localhost',
+    'http://127.0.0.1:4200',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'https://ai-prompt-library-application-seven.vercel.app',
+    'http://localhost:4200',
     'http://127.0.0.1:4200',
 ]
 
