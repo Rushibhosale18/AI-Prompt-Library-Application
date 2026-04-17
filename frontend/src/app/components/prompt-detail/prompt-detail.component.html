@@ -1,0 +1,67 @@
+<div class="container fade-in">
+
+  <!-- Back button -->
+  <button class="btn-secondary back-btn" (click)="goBack()" id="back-btn">
+    ← Back to Library
+  </button>
+
+  <!-- Loading -->
+  <div class="spinner-wrap" *ngIf="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error -->
+  <div class="empty-state" *ngIf="error && !loading">
+    <span class="icon">⚠️</span>
+    <h3>{{ error }}</h3>
+    <button class="btn-primary" style="margin-top:1rem" (click)="goBack()" id="error-back-btn">Go Back</button>
+  </div>
+
+  <!-- Prompt Detail Card -->
+  <div class="detail-card card fade-in" *ngIf="prompt && !loading">
+
+    <!-- Top Meta Row -->
+    <div class="detail-meta">
+      <span class="badge" [ngClass]="getComplexityClass(prompt.complexity)">
+        Complexity {{ prompt.complexity }}/10 · {{ getComplexityLabel(prompt.complexity) }}
+      </span>
+      <span class="view-count" id="view-count-badge">
+        👁 {{ prompt.view_count }} view{{ prompt.view_count !== 1 ? 's' : '' }}
+      </span>
+      <span class="meta-date">{{ prompt.created_at | date:'MMMM d, y · h:mm a' }}</span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="detail-title" id="prompt-title">{{ prompt.title }}</h1>
+
+    <!-- Tags -->
+    <div class="detail-tags" *ngIf="prompt.tags && prompt.tags.length > 0">
+      <span class="tag-chip" *ngFor="let tag of prompt.tags"># {{ tag }}</span>
+    </div>
+
+    <!-- Content Box -->
+    <div class="content-box">
+      <div class="content-header">
+        <span class="content-label">📝 Prompt Content</span>
+        <button
+          class="copy-btn"
+          (click)="copyContent()"
+          id="copy-btn"
+          [class.copied]="copied">
+          {{ copied ? '✓ Copied!' : '⧉ Copy' }}
+        </button>
+      </div>
+      <p class="content-text" id="prompt-content">{{ prompt.content }}</p>
+    </div>
+
+    <!-- View count info -->
+    <div class="view-info-box">
+      <span class="view-icon">📊</span>
+      <div>
+        <p class="view-info-title">Live View Counter</p>
+        <p class="view-info-sub">This prompt has been viewed <strong>{{ prompt.view_count }}</strong> time{{ prompt.view_count !== 1 ? 's' : '' }}. Counter is stored in Redis and increments on every page load.</p>
+      </div>
+    </div>
+
+  </div>
+</div>

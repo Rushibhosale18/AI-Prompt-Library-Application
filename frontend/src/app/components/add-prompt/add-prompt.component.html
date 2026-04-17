@@ -1,0 +1,116 @@
+<div class="container fade-in">
+  <div class="form-page">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h1>Add New Prompt</h1>
+      <p>Save an AI image generation prompt to your library</p>
+    </div>
+
+    <!-- Error Banner -->
+    <div class="error-banner" *ngIf="submitError" id="submit-error">
+      ⚠️ {{ submitError }}
+    </div>
+
+    <form [formGroup]="promptForm" (ngSubmit)="onSubmit()" class="prompt-form card" novalidate id="add-prompt-form">
+
+      <!-- Title -->
+      <div class="form-group">
+        <label class="form-label" for="input-title">Title</label>
+        <input
+          id="input-title"
+          type="text"
+          class="form-control"
+          formControlName="title"
+          placeholder="e.g. Cyberpunk City at Night"
+          autocomplete="off" />
+        <div class="form-error" *ngIf="title.invalid && title.touched">
+          <span *ngIf="title.errors?.['required']">⚠ Title is required.</span>
+          <span *ngIf="title.errors?.['minlength']">⚠ Title must be at least 3 characters.</span>
+          <span *ngIf="title.errors?.['maxlength']">⚠ Title must be under 255 characters.</span>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="form-group">
+        <label class="form-label" for="input-content">
+          Prompt Content
+          <span class="char-count" [class.warn]="contentLength < 20 && content.touched">
+            {{ contentLength }} chars {{ contentLength < 20 ? '(min 20)' : '✓' }}
+          </span>
+        </label>
+        <textarea
+          id="input-content"
+          class="form-control"
+          formControlName="content"
+          rows="6"
+          placeholder="Describe your AI image generation prompt in detail..."></textarea>
+        <div class="form-error" *ngIf="content.invalid && content.touched">
+          <span *ngIf="content.errors?.['required']">⚠ Content is required.</span>
+          <span *ngIf="content.errors?.['minlength']">⚠ Content must be at least 20 characters.</span>
+        </div>
+      </div>
+
+      <!-- Complexity -->
+      <div class="form-group">
+        <label class="form-label" for="input-complexity">
+          Complexity
+          <span class="complexity-display">
+            <strong>{{ complexityValue }}</strong>/10 &nbsp;{{ getComplexityLabel(complexityValue) }}
+          </span>
+        </label>
+        <input
+          id="input-complexity"
+          type="range"
+          class="complexity-slider"
+          formControlName="complexity"
+          min="1" max="10" step="1" />
+        <div class="slider-labels">
+          <span>1 · Easy</span>
+          <span>5 · Medium</span>
+          <span>10 · Hard</span>
+        </div>
+        <div class="form-error" *ngIf="complexity.invalid && complexity.touched">
+          <span>⚠ Complexity must be between 1 and 10.</span>
+        </div>
+      </div>
+
+      <!-- Tags (Bonus) -->
+      <div class="form-group">
+        <label class="form-label" for="input-tags">Tags <span class="optional">(optional, max 5)</span></label>
+        <div class="tag-input-wrap">
+          <input
+            id="input-tags"
+            type="text"
+            class="form-control tag-input"
+            [(ngModel)]="tagInput"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Type a tag and press Enter..."
+            (keydown)="onTagKeydown($event)" />
+          <button type="button" class="btn-secondary add-tag-btn" (click)="addTag()" id="add-tag-btn">Add</button>
+        </div>
+        <div class="selected-tags" *ngIf="selectedTags.length > 0">
+          <span
+            class="tag-chip removable"
+            *ngFor="let tag of selectedTags"
+            (click)="removeTag(tag)"
+            [id]="'selected-tag-' + tag">
+            # {{ tag }} ✕
+          </span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" routerLink="/prompts" id="cancel-btn">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="submitting" id="submit-btn">
+          <span *ngIf="!submitting">✦ Save Prompt</span>
+          <span *ngIf="submitting" class="btn-loading">
+            <span class="btn-spinner"></span> Saving...
+          </span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

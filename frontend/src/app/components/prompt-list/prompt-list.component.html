@@ -1,0 +1,86 @@
+<div class="container fade-in">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>AI Prompt Library</h1>
+    <p>Discover and manage your AI image generation prompts</p>
+  </div>
+
+  <!-- Tag Filter Bar -->
+  <div class="filter-bar" *ngIf="allTags.length > 0">
+    <span class="filter-label">Filter:</span>
+    <div class="tag-list">
+      <button
+        *ngFor="let tag of allTags"
+        class="tag-chip"
+        [class.active]="activeTag === tag"
+        (click)="filterByTag(tag)"
+        [id]="'tag-' + tag">
+        # {{tag}}
+      </button>
+      <button class="btn-secondary clear-btn" *ngIf="activeTag" (click)="clearFilter()" id="clear-filter">
+        ✕ Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar" *ngIf="!loading && !error">
+    <span class="stat-chip">
+      <span class="stat-icon">📚</span>
+      {{ prompts.length }} Prompt{{ prompts.length !== 1 ? 's' : '' }}
+      <span *ngIf="activeTag"> &nbsp;tagged <strong>#{{ activeTag }}</strong></span>
+    </span>
+  </div>
+
+  <!-- Loading -->
+  <div class="spinner-wrap" *ngIf="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error -->
+  <div class="empty-state" *ngIf="error && !loading">
+    <span class="icon">⚠️</span>
+    <h3>Connection Error</h3>
+    <p>{{ error }}</p>
+    <button class="btn-primary" style="margin-top:1rem" (click)="loadPrompts()" id="retry-btn">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && !error && prompts.length === 0">
+    <span class="icon">✨</span>
+    <h3>No prompts yet</h3>
+    <p>Start building your library by adding your first prompt.</p>
+    <a routerLink="/add-prompt" class="btn-primary" style="margin-top:1rem;text-decoration:none" id="first-prompt-btn">+ Add First Prompt</a>
+  </div>
+
+  <!-- Prompt Grid -->
+  <div class="prompt-grid" *ngIf="!loading && !error && prompts.length > 0">
+    <a
+      *ngFor="let prompt of prompts; trackBy: trackById"
+      [routerLink]="['/prompts', prompt.id]"
+      class="prompt-card card"
+      [id]="'prompt-card-' + prompt.id">
+
+      <!-- Card Header -->
+      <div class="card-header">
+        <h2 class="card-title">{{ prompt.title }}</h2>
+        <span class="badge" [ngClass]="getComplexityClass(prompt.complexity)">
+          {{ prompt.complexity }}/10 · {{ getComplexityLabel(prompt.complexity) }}
+        </span>
+      </div>
+
+      <!-- Tags -->
+      <div class="card-tags" *ngIf="prompt.tags && prompt.tags.length > 0">
+        <span class="tag-chip small" *ngFor="let tag of prompt.tags"># {{ tag }}</span>
+      </div>
+
+      <!-- Footer -->
+      <div class="card-footer">
+        <span class="card-date">{{ prompt.created_at | date:'MMM d, y' }}</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+  </div>
+
+</div>
