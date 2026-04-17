@@ -34,8 +34,13 @@ export class LoginComponent {
       next: () => {
         this.router.navigate(['/prompts']);
       },
-      error: () => {
-        this.error = 'Invalid username or password';
+      error: (err) => {
+        console.error('Login error:', err);
+        if (err.status === 0) {
+          this.error = 'CORS/Connection Error: The backend is not responding or is blocking the request.';
+        } else {
+          this.error = `Error (${err.status}): ${err.error?.error || err.message || 'Login failed'}`;
+        }
         this.loading = false;
       }
     });
