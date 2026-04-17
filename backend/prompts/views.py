@@ -8,13 +8,21 @@ from django.core.cache import cache
 
 from .models import Prompt, Tag
 
-# Redis connection
-r = redis.Redis(
-    host=settings.REDIS_HOST,
-    port=settings.REDIS_PORT,
-    db=0,
-    decode_responses=True
-)
+# Redis connection with fallback
+USE_REDIS = False
+if not settings.IS_DEPLOYED:
+    try:
+        r = redis.Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=0,
+            decode_responses=True,
+            socket_connect_timeout=1
+        )
+        r.ping()
+        USE_REDIS = True
+    except Exception:
+        USE_REDIS = False
 
 
 def prompt_to_dict(prompt, include_tags=True):
@@ -123,9 +131,14 @@ def prompt_detail(request, prompt_id):
     except Prompt.DoesNotExist:
         return JsonResponse({'error': 'Prompt not found.'}, status=404)
 
-    # Increment Redis view counter
+    # Increment view counter
     key = f"prompt:{prompt.id}:views"
-    view_count = r.incr(key)
+    if USE_REDIS:
+        view_count = r.incr(key)
+    else:
+        # Fallback for deployed environments without separate Redis
+        view_count = cache.get(key, 0) + 1
+        cache.set(key, view_count)
 
     return JsonResponse(prompt_detail_to_dict(prompt, int(view_count)), status=200)
 
